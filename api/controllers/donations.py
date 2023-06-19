@@ -73,7 +73,7 @@ class Donation_service():
     def get_all_donations_by_foodbank(foodbank_id: int):
         try:
             donations = db.session.query(Donation, User).join(
-                User, Donation.foodbank_id == User.id).filter(Donation.foodbank_id == foodbank_id).all()
+                User, Donation.donor_id == User.id).filter(Donation.foodbank_id == foodbank_id).all()
 
             donations_list = []
             for donation, user in donations:
@@ -84,6 +84,35 @@ class Donation_service():
             return donations_list
         except NoResultFound:
             raise ValueError
+
+
+# GET BY FOODBANK ID WHERE
+
+    @staticmethod
+    def get_all_donations_by_foodbank_where(foodbank_id: int, **kwargs):
+        query = db.session.query(Donation, User).join(
+            User, Donation.donor_id == User.id).filter(Donation.foodbank_id == foodbank_id)
+        for key, value in kwargs.items():
+            try:
+                query = query.filter(
+                    and_(
+                        getattr(Donation, key) == value,
+                        Donation.foodbank_id == foodbank_id,
+                    )
+                )
+            except AttributeError:
+                raise InvalidRequestError
+        if query is None:
+            raise NoResultFound
+        donations = query.all()
+
+        donations_list = []
+        for donation, user in donations:
+            donation_data = donation.to_dict()
+            user_data = user.to_dict()
+            donation_data['user'] = user_data
+            donations_list.append(donation_data)
+        return donations_list
 
     # GET BY FOODBANK ID
 

@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, abort, make_response
 from db.db import DB, db
 from db.models import Donation as tblDonation
 from controllers.auth import Auth
-from controllers.donations import Donation_service as Donation
+from controllers.donations import Donation_service as Donation, find_donations_by
 from sqlalchemy.orm.exc import NoResultFound
 from controllers.requests import Requests
 from flask_cors import CORS
@@ -145,6 +145,17 @@ def get_donation_by_id(id):
         return jsonify({"message": "No donation found", "success": False}), 403
 
 
+# GET DONATIONS BY ANU ARGUMENTS
+@app.route('/api/donations', methods=['GET'])
+def get_donation_by_params():
+    data = request.args
+    try:
+        donations = find_donations_by(**data).all()
+        return [donation.to_dict() for donation in donations]
+    except NoResultFound:
+        return jsonify({"message": "No donation found", "success": False}), 403
+
+
 @app.route('/api/donations/<int:id>', methods=['PUT'])
 def update_donation_status(id):
     data = request.json
@@ -160,8 +171,8 @@ def donate_food(id):
     try:
         Donation.make_donation(id)
         return jsonify({"message": "Donation Given out"})
-    except Exception:
-        return abort(403)
+    except Exception as e:
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)})
 
 # GET DONATIONS BY USER
 
@@ -171,8 +182,21 @@ def get_by_foodbank_id(foodbank_id):
     try:
         donations = Donation.get_all_donations_by_foodbank(foodbank_id)
         return donations
-    except Exception:
-        return abort(403)
+    except Exception as e:
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)})
+
+
+# FOODBANK COUNTS
+@app.route('/api/foodbanks/<int:foodbank_id>/donations/filter')
+def get_donations_by_foodbank_where(foodbank_id):
+    data = request.args
+    try:
+        donations = Donation.get_all_donations_by_foodbank_where(
+            foodbank_id, **data)
+        return donations
+    except Exception as e:
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)})
+
 
 # GET DONATIONS BY USER
 

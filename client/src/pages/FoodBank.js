@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Button, Box, Avatar, Typography } from "@mui/material";
-import { Room, ShoppingCart, AddCircle } from "@mui/icons-material";
-import MyDonations from "../components/MyDonations";
-import CreateDonation from "../components/CreateDonation";
+import { ShoppingCart, AddCircle, Home } from "@mui/icons-material";
 import DonorProfile from "../components/DonorProfile";
 import Logout from "../components/Logout";
 import { calculateCoordinates, calculateDistance } from "../utils";
 import axios from "axios";
 import FoodBankDashboard from "../components/FoodBankDashboard";
+import ManageDonations from "../components/ManageDonations";
+import ManageRequests from "../components/ManageRequests";
 
 const FoodBank = () => {
   const [activeSection, setActiveSection] = useState("foodBankDashboard");
   const [profile, setProfile] = useState(null);
+  const [count, setCount] = useState(null);
   const [distances, setDistances] = useState([]);
-  const [foodbanks, setFoodbanks] = useState([]);
 
   useEffect(() => {
     const get_profile = async () => {
@@ -30,48 +30,47 @@ const FoodBank = () => {
     get_profile();
   }, []);
 
-  // FETCH FOODBANKS NEAR ME ON RENDER:
+  // GET DONATIONS COUNT:
   useEffect(() => {
-    const fetch_foodbanks_near_me = async () => {
-      try {
-        const lat = parseFloat(profile?.latitude);
-        const lon = parseFloat(profile?.longitude);
-        // calculate range
-        const { minLat, maxLat, minLon, maxLon } = calculateCoordinates(
-          lat,
-          lon,
-          20
-        );
-        const res = await axios.get("/api/foodbanks_near_me", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            minLat: minLat,
-            maxLat: maxLat,
-            minLon: minLon,
-            maxLon: maxLon,
-          },
-        });
-        const results = res?.data;
-        setFoodbanks(results);
-        const distancesData = results?.map((result) => {
-          const { id, name, latitude, longitude } = result;
-          const distance = calculateDistance(lat, lon, latitude, longitude);
-          return { id, name, distance };
-        });
-        setDistances(distancesData);
-      } catch (error) {
-        console.error(error);
-      }
+    const fetchData = async () => {
+      const req1 = await axios.get(
+        `api/foodbanks/${profile?.id}/donations/filter`,
+        {
+          params: { status: "completed" },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const req2 = await axios.get(
+        `api/foodbanks/${profile?.id}/donations/filter`,
+        {
+          params: { status: "pending" },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const req3 = await axios.get(
+        `api/foodbanks/${profile?.id}/donations/filter`,
+        {
+          params: { isAvailable: true },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const req4 = await axios.get(
+        `api/foodbanks/${profile?.id}/donations/filter`,
+        {
+          params: { isDonated: true },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      setCount({
+        completed: req1?.data?.length || 0,
+        pending: req2?.data?.length || 0,
+        available: req3?.data?.length || 0,
+        donated: req4?.data?.length || 0,
+      });
     };
 
-    if (profile) {
-      fetch_foodbanks_near_me();
-    } else {
-      return;
-    }
-  }, [profile, profile?.latitude, profile?.longitude, activeSection]);
+    fetchData();
+  }, [profile?.id]);
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
@@ -80,11 +79,11 @@ const FoodBank = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case "foodBankDashboard":
-        return <FoodBankDashboard />;
-      case "myDonations":
-        return <MyDonations />;
-      case "createDonation":
-        return <CreateDonation profile={profile} distances={distances} />;
+        return <FoodBankDashboard count={count} />;
+      case "manageDonations":
+        return <ManageDonations />;
+      case "manageRequests":
+        return <ManageRequests profile={profile} distances={distances} />;
       case "profile":
         return <DonorProfile profile={profile} />;
       default:
@@ -151,16 +150,16 @@ const FoodBank = () => {
                           : "#1976D2",
                     },
                   }}
-                  startIcon={<Room sx={{ fontSize: 40, color: "#fff" }} />}
+                  startIcon={<Home sx={{ fontSize: 40, color: "#fff" }} />}
                 >
-                  View Food Bank Near Me
+                  Dashboard
                 </Button>
               </Grid>
               <Grid item>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleSectionChange("createDonation")}
+                  onClick={() => handleSectionChange("manageRequests")}
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -171,19 +170,19 @@ const FoodBank = () => {
                     width: "100%",
                     justifyContent: "flex-start",
                     backgroundColor:
-                      activeSection === "createDonation"
+                      activeSection === "manageRequests"
                         ? "#FF5722"
                         : "#1976D2",
                     "&:hover": {
                       backgroundColor:
-                        activeSection === "createDonation"
+                        activeSection === "manageRequests"
                           ? "#FF5722"
                           : "#1976D2",
                     },
                   }}
                   startIcon={<AddCircle sx={{ fontSize: 40, color: "#fff" }} />}
                 >
-                  Create Donation
+                  Manage Donations
                 </Button>
               </Grid>
 
@@ -191,7 +190,7 @@ const FoodBank = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleSectionChange("myDonations")}
+                  onClick={() => handleSectionChange("manageDonations")}
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -202,17 +201,21 @@ const FoodBank = () => {
                     width: "100%",
                     justifyContent: "flex-start",
                     backgroundColor:
-                      activeSection === "myDonations" ? "#FF5722" : "#1976D2",
+                      activeSection === "manageDonations"
+                        ? "#FF5722"
+                        : "#1976D2",
                     "&:hover": {
                       backgroundColor:
-                        activeSection === "myDonations" ? "#FF5722" : "#1976D2",
+                        activeSection === "manageDonations"
+                          ? "#FF5722"
+                          : "#1976D2",
                     },
                   }}
                   startIcon={
                     <ShoppingCart sx={{ fontSize: 40, color: "#fff" }} />
                   }
                 >
-                  View My Donations
+                  Manage Request
                 </Button>
               </Grid>
               <Grid item sx={{ marginTop: "auto" }}>
