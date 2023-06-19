@@ -3,7 +3,7 @@ import useAuth from "../hooks/useAuth";
 
 const RequireAuth = ({ allowedRoles }) => {
   const { auth } = useAuth();
-  const roles = [auth?.role !== undefined && auth.role];
+  const roles = [auth?.role];
   const location = useLocation();
 
   console.log(roles, allowedRoles);

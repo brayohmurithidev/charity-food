@@ -68,8 +68,11 @@ const FoodBank = () => {
         donated: req4?.data?.length || 0,
       });
     };
-
-    fetchData();
+    if (profile?.id !== undefined) {
+      fetchData();
+    } else {
+      return;
+    }
   }, [profile?.id]);
 
   const handleSectionChange = (section) => {
