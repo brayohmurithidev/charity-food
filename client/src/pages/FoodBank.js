@@ -84,7 +84,7 @@ const FoodBank = () => {
       case "foodBankDashboard":
         return <FoodBankDashboard count={count} />;
       case "manageDonations":
-        return <ManageDonations />;
+        return <ManageDonations profile={profile} />;
       case "manageRequests":
         return <ManageRequests profile={profile} distances={distances} />;
       case "profile":
@@ -162,37 +162,6 @@ const FoodBank = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleSectionChange("manageRequests")}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    color: "#fff",
-                    fontSize: "16px",
-                    fontWeight: 600,
-                    borderRadius: "10px",
-                    width: "100%",
-                    justifyContent: "flex-start",
-                    backgroundColor:
-                      activeSection === "manageRequests"
-                        ? "#FF5722"
-                        : "#1976D2",
-                    "&:hover": {
-                      backgroundColor:
-                        activeSection === "manageRequests"
-                          ? "#FF5722"
-                          : "#1976D2",
-                    },
-                  }}
-                  startIcon={<AddCircle sx={{ fontSize: 40, color: "#fff" }} />}
-                >
-                  Manage Donations
-                </Button>
-              </Grid>
-
-              <Grid item>
-                <Button
-                  variant="contained"
-                  color="primary"
                   onClick={() => handleSectionChange("manageDonations")}
                   sx={{
                     display: "flex",
@@ -210,6 +179,37 @@ const FoodBank = () => {
                     "&:hover": {
                       backgroundColor:
                         activeSection === "manageDonations"
+                          ? "#FF5722"
+                          : "#1976D2",
+                    },
+                  }}
+                  startIcon={<AddCircle sx={{ fontSize: 40, color: "#fff" }} />}
+                >
+                  Manage Donations
+                </Button>
+              </Grid>
+
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleSectionChange("manageRequests")}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "#fff",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    borderRadius: "10px",
+                    width: "100%",
+                    justifyContent: "flex-start",
+                    backgroundColor:
+                      activeSection === "manageRequests"
+                        ? "#FF5722"
+                        : "#1976D2",
+                    "&:hover": {
+                      backgroundColor:
+                        activeSection === "manageRequests"
                           ? "#FF5722"
                           : "#1976D2",
                     },
