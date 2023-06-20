@@ -86,7 +86,7 @@ const FoodBank = () => {
       case "manageDonations":
         return <ManageDonations profile={profile} />;
       case "manageRequests":
-        return <ManageRequests profile={profile} distances={distances} />;
+        return <ManageRequests profile={profile} />;
       case "profile":
         return <DonorProfile profile={profile} />;
       default:

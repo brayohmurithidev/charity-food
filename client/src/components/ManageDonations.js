@@ -15,8 +15,10 @@ import {
   Paper,
   FormControl,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ManageDonations = ({ profile }) => {
   const [selectedDonation, setSelectedDonation] = useState(null);
@@ -24,17 +26,18 @@ const ManageDonations = ({ profile }) => {
   const [donations, setDonations] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
 
+  const fetchDonations = async () => {
+    try {
+      const res = await axios.get(`/api/foodbanks/${profile?.id}/donations`);
+      const results = res?.data;
+      console.log(results);
+      setDonations(results);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchDonations = async () => {
-      try {
-        const res = await axios.get(`/api/foodbanks/${profile?.id}/donations`);
-        const results = res?.data;
-        console.log(results);
-        setDonations(results);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     fetchDonations();
   }, [profile?.id]);
 
@@ -43,10 +46,28 @@ const ManageDonations = ({ profile }) => {
     setModalOpen(true);
   };
 
-  const handleUpdateStatus = () => {
+  const handleUpdateStatus = async () => {
     // Code to update donation status
-    console.log("Selected Donation:", selectedDonation);
-    console.log("Selected Status:", selectedStatus);
+    try {
+      const res = await axios.put(
+        `/api/donations/${selectedDonation.id}`,
+        JSON.stringify({ status: selectedStatus }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log(res?.data);
+      toast.success(res?.data?.message);
+      fetchDonations();
+    } catch (err) {
+      if (!err?.response) {
+        toast.error("No Server Response !");
+      } else if (err.response?.status === 400) {
+        toast.error(err?.response?.data?.message);
+      } else {
+        toast.error("Registration Error");
+      }
+    }
   };
 
   return (
@@ -90,28 +111,32 @@ const ManageDonations = ({ profile }) => {
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {donations?.map((donation) => (
-                <TableRow key={donation.id}>
-                  <TableCell>{donation.food_item}</TableCell>
-                  <TableCell>{donation.quantity}</TableCell>
-                  <TableCell>{donation.pickup_preference}</TableCell>
-                  <TableCell>{donation.user.name}</TableCell>
-                  <TableCell>{donation.user.phone}</TableCell>
-                  <TableCell>{donation.status}</TableCell>
-                  <TableCell>{donation.isDonated ? "Yes" : "No"}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleViewDonation(donation)}
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            {!donations ? (
+              <CircularProgress />
+            ) : (
+              <TableBody>
+                {donations?.map((donation) => (
+                  <TableRow key={donation.id}>
+                    <TableCell>{donation.food_item}</TableCell>
+                    <TableCell>{donation.quantity}</TableCell>
+                    <TableCell>{donation.pickup_preference}</TableCell>
+                    <TableCell>{donation.user.name}</TableCell>
+                    <TableCell>{donation.user.phone}</TableCell>
+                    <TableCell>{donation.status}</TableCell>
+                    <TableCell>{donation.isDonated ? "Yes" : "No"}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleViewDonation(donation)}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            )}
           </Table>
         </TableContainer>
       </Box>
@@ -220,29 +245,35 @@ const ManageDonations = ({ profile }) => {
                 </Grid>
               </Grid>
 
-              <Box mt={2}>
+              {selectedDonation.status === "canceled" ? (
                 <Typography variant="h6" component="h3">
-                  Update Status
+                  This Donation was canceled by the donor
                 </Typography>
-                <FormControl fullWidth sx={{ marginY: 3 }}>
-                  <Select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
+              ) : (
+                <Box mt={2}>
+                  <Typography variant="h6" component="h3">
+                    Update Status
+                  </Typography>
+                  <FormControl fullWidth sx={{ marginY: 3 }}>
+                    <Select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                    >
+                      <MenuItem value="completed">Completed</MenuItem>
+                      <MenuItem value="follow-up">Under Follow Up</MenuItem>
+                      <MenuItem value="rejected">Rejected</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <Button
+                    sx={{ padding: "10px" }}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUpdateStatus}
                   >
-                    <MenuItem value="completed">Completed</MenuItem>
-                    <MenuItem value="follow-up">Under Follow Up</MenuItem>
-                    <MenuItem value="rejected">Rejected</MenuItem>
-                  </Select>
-                </FormControl>
-                <Button
-                  sx={{ padding: "10px" }}
-                  variant="contained"
-                  color="primary"
-                  onClick={handleUpdateStatus}
-                >
-                  Update Status
-                </Button>
-              </Box>
+                    Update Status
+                  </Button>
+                </Box>
+              )}
             </>
           )}
         </Box>

@@ -4,6 +4,7 @@ from typing import Any
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
 from typing import Any
+from sqlalchemy import and_
 
 
 # ADD REQUEST
@@ -69,7 +70,8 @@ class Requests:
             requests = db.session.query(FoodRequests, User, Donation).join(
                 Donation, FoodRequests.donation_id == Donation.id).join(
                 User, User.id == Donation.foodbank_id).filter(
-                FoodRequests.requestor_id == requestor_id).all()
+                    FoodRequests.requestor_id == requestor_id,
+            ).all()
 
             request_list = []
             for request, user, donation in requests:
@@ -106,3 +108,25 @@ class Requests:
     #         raise ValueError
 
     # GET REQUESTS SENT for A donation
+
+    # GET REQUESTS SENT FOR A DONATION, FOR SPECIFIC FOODBANKS
+    @staticmethod
+    def get_requests_made_to_a_foodbank(foodbank_id: int):
+        try:
+            print("Inside function")
+            requests = db.session.query(FoodRequests, Donation, User).join(Donation, FoodRequests.donation_id == Donation.id).join(
+                User, User.id == FoodRequests.requestor_id).filter(Donation.foodbank_id == foodbank_id).all()
+            request_list = []
+            print(requests)
+            for request, donation, user in requests:
+                print(request, donation, user)
+                request_data = request.to_dict()
+                user_data = user.to_dict()
+                donation_data = donation.to_dict()
+
+                request_data['user'] = user_data
+                request_data['donation'] = donation_data
+                request_list.append(request_data)
+            return request_list
+        except NoResultFound:
+            raise ValueError

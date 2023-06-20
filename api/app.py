@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify, abort, make_response
 from db.db import DB, db
-from db.models import Donation as tblDonation
+from db.models import Donation as tblDonation, FoodRequests as tblRequests
 from controllers.auth import Auth
 from controllers.donations import Donation_service as Donation, find_donations_by
 from sqlalchemy.orm.exc import NoResultFound
 from controllers.requests import Requests
 from flask_cors import CORS
+from sqlalchemy import or_
 
 
 app = Flask(__name__)
@@ -23,6 +24,31 @@ def test():
 def update_isAvailable():
     tblDonation.query.filter_by(status='completed').update(
         {tblDonation.isAvailable: True})
+    tblDonation.query.filter(
+        or_(
+            tblDonation.status == 'pending',
+            tblDonation.status == 'canceled',
+            tblDonation.status == 'rejected',
+            tblDonation.status == 'follow-up'
+        )
+    ).update(
+        {tblDonation.isAvailable: False}
+    )
+    db.session.commit()
+
+# UPDATE IS DONATED
+
+
+@app.before_request
+def update_isDonated():
+    requests = tblRequests.query.filter_by(status='allocated').all()
+    for request in requests:
+        tblDonation.query.filter_by(request.donation_id == tblDonation.id).update({
+            tblDonation.isDonated: True,
+            tblDonation.isAvailable: False
+        })
+    tblDonation.query.filter_by(isDonated=True).update({
+        tblDonation.isAvailable: False})
     db.session.commit()
 
 # register new user
@@ -289,6 +315,17 @@ def update_request_status(id):
 def get_by_requestor_id(requestor_id):
     try:
         requests = Requests.get_all_requests_by_requestor(requestor_id)
+        return requests
+    except Exception as e:
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
+
+
+# GET DONATIONS BY USER
+@app.route('/api/foodbanks/<int:foodbank_id>/requests', methods=['GET'])
+def get_by_foodbank(foodbank_id):
+    try:
+        # print("foodbank_id", foodbank_id)
+        requests = Requests.get_requests_made_to_a_foodbank(foodbank_id)
         return requests
     except Exception as e:
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
