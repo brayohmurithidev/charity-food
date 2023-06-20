@@ -174,10 +174,14 @@ const ManageDonations = ({ profile }) => {
                 </Grid>
               </Grid>
 
-              <Typography variant="h6" component="h3">
+              <Typography
+                variant="h4"
+                component="h3"
+                sx={{ fontWeight: 700, color: "teal" }}
+              >
                 Donor Information
               </Typography>
-              <Grid container spacing={2} my={3}>
+              <Grid container spacing={2} my={2}>
                 <Grid item xs={6}>
                   <Typography>
                     <strong>Donor Name:</strong> {selectedDonation.user.name}
