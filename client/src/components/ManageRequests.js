@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Box,
   Button,
@@ -75,75 +76,81 @@ const ManageRequests = ({ profile }) => {
 
   return (
     <>
-      <Box
-        sx={{
-          width: "100%",
-        }}
+      <motion.Box
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <Typography variant="h5" component="h2">
-          Manage Requests
-        </Typography>
+        <Box
+          sx={{
+            width: "75vw",
+          }}
+        >
+          <Typography variant="h5" component="h2">
+            Manage Requests
+          </Typography>
 
-        <TableContainer component={Paper}>
-          <Table size="medium" aria-label="donations table">
-            <TableHead sx={{ backgroundColor: "#ccc" }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Requestor Name
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Food Item
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Urgency
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Units
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Phone Number
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Email
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Status
-                </TableCell>
-                <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            {!donations ? (
-              <CircularProgress />
-            ) : (
-              <TableBody>
-                {donations?.map((donation) => (
-                  <TableRow key={donation.id}>
-                    <TableCell>{donation.user.name}</TableCell>
-                    <TableCell>{donation.donation.food_item}</TableCell>
-                    <TableCell>{donation.urgency}</TableCell>
-                    <TableCell>{donation.units}</TableCell>
-                    <TableCell>{donation.user.phone}</TableCell>
-                    <TableCell>{donation.user.email}</TableCell>
-                    <TableCell>{donation.status}</TableCell>
+          <TableContainer component={Paper}>
+            <Table size="medium" aria-label="donations table">
+              <TableHead sx={{ backgroundColor: "#ccc" }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Requestor Name
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Food Item
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Urgency
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Units
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Phone Number
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Email
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Status
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 900, fontSize: "20px" }}>
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              {!donations ? (
+                <CircularProgress />
+              ) : (
+                <TableBody>
+                  {donations?.map((donation) => (
+                    <TableRow key={donation.id}>
+                      <TableCell>{donation.user.name}</TableCell>
+                      <TableCell>{donation.donation.food_item}</TableCell>
+                      <TableCell>{donation.urgency}</TableCell>
+                      <TableCell>{donation.units}</TableCell>
+                      <TableCell>{donation.user.phone}</TableCell>
+                      <TableCell>{donation.user.email}</TableCell>
+                      <TableCell>{donation.status}</TableCell>
 
-                    <TableCell>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleViewDonation(donation)}
-                      >
-                        View
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
-          </Table>
-        </TableContainer>
-      </Box>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleViewDonation(donation)}
+                        >
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              )}
+            </Table>
+          </TableContainer>
+        </Box>
+      </motion.Box>
       {/* Modal */}
       <Modal
         open={modalOpen}
@@ -154,7 +161,10 @@ const ManageRequests = ({ profile }) => {
           justifyContent: "center",
         }}
       >
-        <Box
+        <motion.Box
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
           component={Paper}
           sx={{
             minWidth: 700,
@@ -280,7 +290,7 @@ const ManageRequests = ({ profile }) => {
               )}
             </>
           )}
-        </Box>
+        </motion.Box>
       </Modal>
     </>
   );
