@@ -3,7 +3,7 @@ import { Grid, Button, Box, Avatar, Typography } from "@mui/material";
 import { ShoppingCart, AddCircle, Home } from "@mui/icons-material";
 import DonorProfile from "../components/DonorProfile";
 import Logout from "../components/Logout";
-import { calculateCoordinates, calculateDistance } from "../utils";
+
 import axios from "axios";
 import FoodBankDashboard from "../components/FoodBankDashboard";
 import ManageDonations from "../components/ManageDonations";
@@ -13,7 +13,6 @@ const FoodBank = () => {
   const [activeSection, setActiveSection] = useState("foodBankDashboard");
   const [profile, setProfile] = useState(null);
   const [count, setCount] = useState(null);
-  const [distances, setDistances] = useState([]);
 
   useEffect(() => {
     const get_profile = async () => {

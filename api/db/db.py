@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
-from flask_login import LoginManager
 
 
 load_dotenv()
@@ -26,12 +25,6 @@ class DB:
         app.secret_key = os.environ.get('SECRET_KEY')
 
         db.init_app(app)
-
-        self.login_manager = LoginManager()
-        self.login_manager.init_app(app)
-        self.login_manager.login_view = 'user_login'  # Set the login view route
-        # Set the session protection level
-        self.login_manager.session_protection = 'strong'
 
     def create_all(self):
         '''Create all the database tables with the SQLAlchemy object.'''

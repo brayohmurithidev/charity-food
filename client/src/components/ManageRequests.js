@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -27,7 +27,7 @@ const ManageRequests = ({ profile }) => {
   const [donations, setDonations] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  const fetchDonations = async () => {
+  const fetchDonations = useCallback(async () => {
     try {
       const res = await axios.get(`/api/foodbanks/${profile?.id}/requests`);
       const results = res?.data;
@@ -36,11 +36,11 @@ const ManageRequests = ({ profile }) => {
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [profile?.id]);
 
   useEffect(() => {
     fetchDonations();
-  }, [profile?.id]);
+  }, [fetchDonations]);
 
   const handleViewDonation = (donation) => {
     setSelectedDonation(donation);

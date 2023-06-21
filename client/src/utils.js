@@ -22,7 +22,7 @@ export const calculateCoordinates = (lat, lon, radius) => {
   const radiusInRadians = radius / earthRadius;
 
   // Calculate the circumference of the circle within the radius
-  const circumference = 2 * Math.PI * earthRadius * radiusInRadians;
+  // const circumference = 2 * Math.PI * earthRadius * radiusInRadians;
 
   // Number of points to generate within the circumference
   const numPoints = 360;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -26,7 +26,7 @@ const ManageDonations = ({ profile }) => {
   const [donations, setDonations] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  const fetchDonations = async () => {
+  const fetchDonations = useCallback(async () => {
     try {
       const res = await axios.get(`/api/foodbanks/${profile?.id}/donations`);
       const results = res?.data;
@@ -35,11 +35,11 @@ const ManageDonations = ({ profile }) => {
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [profile?.id]);
 
   useEffect(() => {
     fetchDonations();
-  }, [profile?.id]);
+  }, [fetchDonations]);
 
   const handleViewDonation = (donation) => {
     setSelectedDonation(donation);

@@ -112,10 +112,10 @@ const MyRequests = ({ distances }) => {
     }));
   };
 
-  useEffect(() => {
-    console.log("editRequest", editRequest);
-    console.log("distances", distances);
-  }, [editRequest]);
+  // useEffect(() => {
+  //   console.log("editRequest", editRequest);
+  //   console.log("distances", distances);
+  // }, [editRequest]);
 
   // CONST HANDLE UPDATE
   const handleUpdate = (e) => {
