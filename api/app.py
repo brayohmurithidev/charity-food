@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, abort, make_response
+from flask_mail import Mail, Message
 from db.db import DB, db
 from db.models import Donation as tblDonation, FoodRequests as tblRequests
 from controllers.auth import Auth
@@ -12,6 +13,24 @@ from sqlalchemy import or_
 app = Flask(__name__)
 DB = DB(app)
 CORS(app, supports_credentials=True)
+
+app.config['MAIL_SERVER'] = 'us2.smtp.mailhostbox.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'me@fazisols.tech'
+app.config['MAIL_PASSWORD'] = 'Murume987^'
+
+mail = Mail(app)
+
+
+@app.route('/send-email')
+def send_email():
+    msg = Message('Hello', sender='me@fazisols.tech',
+                  recipients=['murithibrianm@gmail.com'])
+    msg.body = "This is a test message"
+
+    mail.send(msg)
+    return "Email sent"
 
 
 @app.route('/', methods=['GET'])
