@@ -55,7 +55,7 @@ def send_email_method(title, recipients, body, mail):
         </html>
         """
 
-        msg = Message(title, sender='me@fazisols.tech',
+        msg = Message(title, sender='info@johnteacher.tech',
                       recipients=[recipients])
         msg.html = html_body
         mail.send(msg)

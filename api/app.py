@@ -36,7 +36,7 @@ mail = Mail(app)
 @app.route('/send-email')
 def send_email():
     print(os.environ.get('MAIL_PASSWORD'))
-    msg = Message('Hello', sender='me@fazisols.tech',
+    msg = Message('Hello', sender='info@johnteacher.tech',
                   recipients=['murithibrianm@gmail.com'])
     msg.body = "This is a test message"
 
@@ -459,4 +459,4 @@ def get_by_foodbank(foodbank_id):
 
 if __name__ == '__main__':
     DB.create_all()
-    app.run(port='5000')
+    app.run(debug=True, port='5000')
