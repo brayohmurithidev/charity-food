@@ -19,15 +19,6 @@ app = Flask(__name__)
 DB = DB(app)
 CORS(app, supports_credentials=True)
 
-# BASIC LOGGER CONFIGURATION
-# logging.basicConfig(filename='app.logs', filemode='w',
-#                     format='%(name)s - %(levelname)s - %(message)s')
-
-# DECLARE REDIS
-redis_host = os.environ.get('REDIS_HOST')
-r_client = Redis(redis_host, socket_connect_timeout=1,
-                 decode_responses=True)
-
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 app.config['MAIL_USE_TLS'] = True
@@ -236,6 +227,17 @@ def get_donation_by_params():
             donations = donations
 
         return jsonify(donations_dict)
+        donations = r_client.get('donations')
+        if donations is None:
+            donations = find_donations_by(**data).all()
+            donations_dict = [donation.to_dict() for donation in donations]
+            donations_json = json.dumps(donations_dict)
+            r_client.set('donations', donations_json)
+        else:
+            # donations_dict = json.loads(donations)
+            donations = donations
+
+        return jsonify(donations_dict)
     except NoResultFound:
         return jsonify({"message": "No donation found", "success": False}), 403
     except Exception as e:
@@ -274,6 +276,13 @@ def get_by_foodbank_id(foodbank_id):
                 f'foodbank_{foodbank_id}_donations', json.dumps(donations, default=decimal_default))
         else:
             donations = json.loads(donations)
+        donations = r_client.get(f'foodbank_{foodbank_id}_donations')
+        if donations is None:
+            donations = Donation.get_all_donations_by_foodbank(foodbank_id)
+            r_client.set(
+                f'foodbank_{foodbank_id}_donations', json.dumps(donations, default=decimal_default))
+        else:
+            donations = json.loads(donations)
         return donations
     except Exception as e:
         # logging.error(e)
@@ -285,6 +294,16 @@ def get_by_foodbank_id(foodbank_id):
 def get_donations_by_foodbank_where(foodbank_id):
     data = request.args
     try:
+        donations = r_client.get(f'foodbanks_{foodbank_id}_filtered_donations')
+        if donations is None:
+
+            donations = Donation.get_all_donations_by_foodbank_where(
+                foodbank_id, **data)
+            r_client.set(
+                f'foodbanks_{foodbank_id}_filtered_donations', json.dumps(donations, default=decimal_default))
+        else:
+            donations = json.loads(donations)
+
         donations = r_client.get(f'foodbanks_{foodbank_id}_filtered_donations')
         if donations is None:
 
@@ -307,6 +326,15 @@ def get_donations_by_foodbank_where(foodbank_id):
 @app.route('/api/donors/<int:donor_id>/donations', methods=['GET'])
 def get_by_donor_id(donor_id):
     try:
+        donations = r_client.get(f'donors_{donor_id}_donations')
+        if donations is None:
+
+            donations = Donation.get_all_donations_by_donor(donor_id)
+            r_client.set(f'donors_{donor_id}_donations', json.dumps(
+                donations, default=decimal_default))
+        else:
+
+            donations = json.loads(donations)
         donations = r_client.get(f'donors_{donor_id}_donations')
         if donations is None:
 
@@ -426,4 +454,4 @@ def get_by_foodbank(foodbank_id):
 
 if __name__ == '__main__':
     DB.create_all()
-    app.run(debug=True, port='5000')
+    app.run(port='5000')
