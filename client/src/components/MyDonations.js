@@ -37,7 +37,6 @@ const MyDonations = () => {
     // Destructure the object and update the status
     const { status, ...updatedData } = donation;
     updatedData.status = "canceled";
-    console.log(updatedData);
     setUpdateData({ id: updatedData.id, status: updatedData.status });
     setOpen(true);
   };
@@ -65,7 +64,7 @@ const MyDonations = () => {
         toast.success(res?.data?.message);
         setOpen(false);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   };
@@ -77,11 +76,9 @@ const MyDonations = () => {
       const id = auth?.user;
       try {
         const res = await axios.get(`/api/donors/${id}/donations`);
-        console.log(res?.data);
         setDonations(res?.data);
         setLoading(false);
       } catch (error) {
-        console.log(error);
         setLoading(false);
       }
     };

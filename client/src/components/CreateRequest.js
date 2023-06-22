@@ -44,8 +44,7 @@ const CreateRequest = ({ distances, profile }) => {
         } else if (err.response?.status === 400) {
           toast.error(err?.response?.data?.message);
         } else {
-          console.log(err?.response?.data?.message);
-          toast.error("Donation Error");
+          toast.error(err?.response?.data?.message);
         }
       }
     }
@@ -59,10 +58,6 @@ const CreateRequest = ({ distances, profile }) => {
       requestor_id: profile?.id,
     }));
   };
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <Box

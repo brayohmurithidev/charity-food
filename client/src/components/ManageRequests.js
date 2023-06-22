@@ -31,10 +31,9 @@ const ManageRequests = ({ profile }) => {
     try {
       const res = await axios.get(`/api/foodbanks/${profile?.id}/requests`);
       const results = res?.data;
-      console.log(results);
       setDonations(results);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }, [profile?.id]);
 
@@ -57,7 +56,6 @@ const ManageRequests = ({ profile }) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(res?.data);
       toast.success(res?.data?.message);
       await fetchDonations();
       // setInterval(() => {

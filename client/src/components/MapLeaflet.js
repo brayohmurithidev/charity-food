@@ -11,15 +11,17 @@ const MapLeaflet = ({ lat, lon, foodbanks }) => {
 
   useEffect(() => {
     if (foodbanks) {
-      console.log("map", foodbanks);
       const newMarkers = foodbanks?.map((foodbank) => ({
         id: foodbank.id,
-        geocode: [foodbank?.latitude, foodbank?.longitude],
+        geocode: [
+          foodbank.latitude || foodbank.foodbank.latitude,
+          foodbank.longitude || foodbank.foodbank.longitude,
+        ],
         popUp: {
-          name: foodbank.name,
-          city: foodbank.city,
-          postalCode: foodbank.postal_code,
-          state: foodbank.state,
+          name: foodbank.name || foodbank.foodbank.name,
+          city: foodbank.city || foodbank.foodbank.city,
+          postalCode: foodbank.postal_code || foodbank.foodbank.postal_code,
+          state: foodbank.state || foodbank.foodbank.state,
           acceptedFoods: foodbank.preferred_food_items,
         },
       }));
@@ -51,8 +53,6 @@ const MapLeaflet = ({ lat, lon, foodbanks }) => {
     });
   };
 
-  console.log(markers);
-
   return (
     <MapContainer key={mapKey} center={[lat, lon]} zoom={13}>
       {/* Display tiles of our maps */}
@@ -80,7 +80,6 @@ const MapLeaflet = ({ lat, lon, foodbanks }) => {
         </Marker>
         {markers.map((marker, index) => (
           <Marker key={index} position={marker.geocode} icon={customIcon}>
-            {console.log(marker)}
             <Popup>
               `<h4> Name: {marker.popUp.name}</h4>
               <h4> City: {marker.popUp.city}</h4>

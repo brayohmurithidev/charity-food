@@ -23,7 +23,7 @@ const Recepient = () => {
         });
         setProfile(res.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     get_profile();
@@ -120,6 +120,16 @@ const Recepient = () => {
                 }}
               >
                 Hello, Welcome {profile?.name.split(" ")[0]} !
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "teal",
+                  fontWeight: 500,
+                  marginY: 3,
+                }}
+              >
+                Help is here for you!
               </Typography>
             </Grid>
             <Grid item>

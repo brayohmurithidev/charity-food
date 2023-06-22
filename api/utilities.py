@@ -1,4 +1,5 @@
 from flask_mail import Message
+from decimal import Decimal
 
 
 def send_email_method(title, recipients, body, mail):
@@ -61,3 +62,11 @@ def send_email_method(title, recipients, body, mail):
         return True
     except Exception as e:
         raise ValueError(str(e))
+
+
+# Custom function to handle Decimal serialization
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return str(obj)
+    raise TypeError(
+        f"Object of type {type(obj).__name__} is not JSON serializable")
