@@ -7,24 +7,27 @@ from controllers.donations import Donation_service as Donation, find_donations_b
 from sqlalchemy.orm.exc import NoResultFound
 from controllers.requests import Requests
 from flask_cors import CORS
+from utilities import send_email_method
 from sqlalchemy import or_
+import os
 
 
 app = Flask(__name__)
 DB = DB(app)
 CORS(app, supports_credentials=True)
 
-app.config['MAIL_SERVER'] = 'us2.smtp.mailhostbox.com'
-app.config['MAIL_PORT'] = 587
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'me@fazisols.tech'
-app.config['MAIL_PASSWORD'] = 'Murume987^'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 mail = Mail(app)
 
 
 @app.route('/send-email')
 def send_email():
+    print(os.environ.get('MAIL_PASSWORD'))
     msg = Message('Hello', sender='me@fazisols.tech',
                   recipients=['murithibrianm@gmail.com'])
     msg.body = "This is a test message"
@@ -146,9 +149,13 @@ def get_reset_password_token():
     email = request.json.get('email')
     try:
         token = Auth.get_reset_password_token(email)
-        return jsonify({"success": True, "email": email, "reset_token": token}), 200
-    except ValueError:
-        return abort(403)
+        send_email_method('Reset Password - CHARITY FOOD', email,
+                          token, mail)
+        return jsonify({"success": True, "message": f'A reset OTP has been sent to {email}'}), 200
+    except Exception as e:
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
+    # except ValueError:
+    #     return abort(403)
 
 # UPDATE PASSWORD
 

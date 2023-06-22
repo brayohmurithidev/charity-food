@@ -29,7 +29,7 @@ const ResetPassword = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-        toast.success(`${res?.data?.reset_token}`);
+        toast.success(`${res?.data?.message}`);
         // Show the reset code and new password fields
         setShowCodeAndNewPasswordFields(true);
       } catch (err) {

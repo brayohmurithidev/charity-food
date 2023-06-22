@@ -3,6 +3,7 @@ import React from "react";
 import MapLeaflet from "./MapLeaflet";
 
 const FoodBankNearMe = ({ profile, foodbanks }) => {
+  console.log("foodbanks", foodbanks);
   return (
     <Grid container spacing={2}>
       <Grid

@@ -11,9 +11,10 @@ const MapLeaflet = ({ lat, lon, foodbanks }) => {
 
   useEffect(() => {
     if (foodbanks) {
-      const newMarkers = foodbanks.map((foodbank) => ({
+      console.log("map", foodbanks);
+      const newMarkers = foodbanks?.map((foodbank) => ({
         id: foodbank.id,
-        geocode: [foodbank.latitude, foodbank.longitude],
+        geocode: [foodbank?.latitude, foodbank?.longitude],
         popUp: {
           name: foodbank.name,
           city: foodbank.city,

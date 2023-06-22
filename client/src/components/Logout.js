@@ -8,12 +8,14 @@ import axios from "axios";
 const Logout = () => {
   const navigation = useNavigate();
   const { setAuth } = useAuth();
+
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
       try {
         await axios.delete("/api/session");
-        setAuth({});
+        setAuth({}); // Clear the auth state
+        sessionStorage.clear(); // Clear all session storage
         navigation("/", { replace: true });
       } catch (error) {
         console.error(error);
@@ -22,7 +24,6 @@ const Logout = () => {
       console.log("stay logged in");
     }
   };
-
   return (
     <>
       <Button

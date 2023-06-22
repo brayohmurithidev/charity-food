@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -12,8 +12,8 @@ const LOGIN_URL = "/api/session";
 const Login = () => {
   const { setAuth } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+
+  // const from = location.state?.from?.pathname || "/";
 
   const userRef = useRef();
   const errRef = useRef();
@@ -25,11 +25,11 @@ const Login = () => {
     userRef.current.focus();
   }, []);
 
-  useEffect(() => {}, [email, password]);
+  useEffect(() => {}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const from = sessionStorage.getItem("redirectTo") || "/";
     try {
       const res = await axios.post(
         LOGIN_URL,
@@ -44,6 +44,7 @@ const Login = () => {
       setEmail("");
       setPassword("");
       navigate(from, { replace: true });
+      sessionStorage.removeItem("redirectTo");
     } catch (err) {
       if (!err?.response) {
         toast.error("No server response");

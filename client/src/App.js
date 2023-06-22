@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import "./App.css";
@@ -20,10 +20,10 @@ import React, { useEffect } from "react";
 
 // MAIN ENTERY FILE
 function App() {
+  const location = useLocation();
   useEffect(() => {
-    const sessionId = document.cookie;
-    console.log(sessionId);
-  }, []);
+    console.log(location);
+  }, [location]);
   return (
     <>
       <Routes>
@@ -44,11 +44,10 @@ function App() {
             <Route path="user" element={<User />} />
             <Route path="donor" element={<Donor />} />
           </Route>
-        </Route>
-
-        {/* ROUTES FOR RECEPIENTS */}
-        <Route element={<RequireAuth allowedRoles={["recipient"]} />}>
-          <Route path="/recepient" element={<Recepient />} />
+          {/* ROUTES FOR RECEPIENTS */}
+          <Route element={<RequireAuth allowedRoles={["recipient"]} />}>
+            <Route path="/recepient" element={<Recepient />} />
+          </Route>
         </Route>
 
         {/* CATCH ALL OTHERS */}

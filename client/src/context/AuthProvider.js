@@ -4,12 +4,8 @@ const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
-    role:
-      sessionStorage.getItem("role") !== undefined &&
-      (sessionStorage.getItem("role") || ""),
-    user:
-      sessionStorage.getItem("user") !== undefined &&
-      (sessionStorage.getItem("user") || ""),
+    role: sessionStorage.getItem("role") || "",
+    user: sessionStorage.getItem("user") || "",
   });
 
   useEffect(() => {
@@ -18,9 +14,8 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.setItem("user", auth.user);
     } else {
       sessionStorage.clear();
-      return;
     }
-  }, [auth, auth.role, auth.user]);
+  }, [auth]);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

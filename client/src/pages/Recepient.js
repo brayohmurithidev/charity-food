@@ -13,7 +13,7 @@ const Recepient = () => {
   const [activeSection, setActiveSection] = useState("foodBankNearMe");
   const [profile, setProfile] = useState(null);
   const [distances, setDistances] = useState([]);
-  // const [foodbanks, setFoodbanks] = useState([]);
+  const [foodbanks, setFoodbanks] = useState([]);
 
   useEffect(() => {
     const get_profile = async () => {
@@ -53,6 +53,7 @@ const Recepient = () => {
           },
         });
         const results = res?.data;
+        setFoodbanks(results);
         const distancesData = results?.map((result) => {
           const id = result.id;
           const latitude = result.foodbank.latitude;
@@ -76,7 +77,7 @@ const Recepient = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case "foodBankNearMe":
-        return <FoodBankNearMe profile={profile} />;
+        return <FoodBankNearMe foodbanks={foodbanks} profile={profile} />;
       case "myRequests":
         return <MyRequests distances={distances} />;
       case "createRequest":

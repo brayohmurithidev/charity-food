@@ -127,7 +127,7 @@ class Donation_service():
                     and_(
                         donation.foodbank_id == User.id,
                         User.latitude.between(float(min_lat), float(max_lat)),
-                        User.longitude.between(float(min_lon), float(max_lon))
+                        User.longitude.between(float(min_lon), float(max_lon)),
                     )
                 ).first()
                 if donation_bank is None:

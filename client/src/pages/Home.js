@@ -1,9 +1,15 @@
 import { Box, Button, Grid, Typography } from "@mui/material";
 import React from "react";
 import banner1 from "../assets/images/background.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const handleClick = (path) => {
+    sessionStorage.setItem("redirectTo", path);
+    navigate(path);
+  };
+
   return (
     <Box
       style={{
@@ -53,14 +59,14 @@ const Home = () => {
         </Grid>
         <Grid item xs={6}>
           <Button
+            component={Link}
             variant="contained"
             sx={{
               backgroundColor: "#6A1B9A",
               width: "100%",
             }}
-            component={Link}
+            onClick={() => handleClick("/donor")}
             to="/donor"
-            stat
           >
             Donate
           </Button>
@@ -68,12 +74,13 @@ const Home = () => {
         <Grid item xs={6}>
           <Button
             component={Link}
-            to="/recepient"
+            onClick={() => handleClick("/recepient")}
             variant="contained"
             sx={{
               backgroundColor: "#FF5722",
               width: "100%",
             }}
+            to="/recepient"
           >
             Ask for Relief Food
           </Button>
@@ -100,6 +107,7 @@ const Home = () => {
           </Typography>
           <Button
             component={Link}
+            onClick={() => handleClick("/foodbank")}
             variant="outlined"
             sx={{
               marginTop: "1rem",
