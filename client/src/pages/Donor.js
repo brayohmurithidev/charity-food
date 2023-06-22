@@ -18,7 +18,7 @@ const Donor = () => {
   useEffect(() => {
     const get_profile = async () => {
       try {
-        const res = await axios.get("/api/profile", {
+        const res = await axios.get("http://165.22.87.172:5000/api/profile", {
           withCredentials: true,
         });
         setProfile(res.data);
@@ -42,17 +42,20 @@ const Donor = () => {
           lon,
           20
         );
-        const res = await axios.get("/api/foodbanks_near_me", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            minLat: minLat,
-            maxLat: maxLat,
-            minLon: minLon,
-            maxLon: maxLon,
-          },
-        });
+        const res = await axios.get(
+          "http://165.22.87.172:5000/api/foodbanks_near_me",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              minLat: minLat,
+              maxLat: maxLat,
+              minLon: minLon,
+              maxLon: maxLon,
+            },
+          }
+        );
         const results = res?.data;
         setFoodbanks(results);
         const distancesData = results?.map((result) => {

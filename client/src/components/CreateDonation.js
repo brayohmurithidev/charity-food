@@ -13,7 +13,7 @@ import {
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const CREATEDONATIONURL = "/api/donations";
+const CREATEDONATIONURL = "http://165.22.87.172:5000/api/donations";
 
 const CreateDonation = ({ profile, distances }) => {
   const [foodbankNearMe, setFoodbankNearMe] = useState("");

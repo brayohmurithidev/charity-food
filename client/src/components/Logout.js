@@ -13,7 +13,7 @@ const Logout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
       try {
-        await axios.delete("/api/session");
+        await axios.delete("http://165.22.87.172:5000/api/session");
         setAuth({}); // Clear the auth state
         sessionStorage.clear(); // Clear all session storage
         navigation("/", { replace: true });

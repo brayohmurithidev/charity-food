@@ -70,7 +70,7 @@ const MyRequests = ({ distances }) => {
       try {
         const id = updateData?.id;
         const res = await axios.put(
-          `/api/requests/${id}`,
+          `http://165.22.87.172:5000/api/requests/${id}`,
           JSON.stringify({
             status: updateData.status,
           }),
@@ -93,7 +93,9 @@ const MyRequests = ({ distances }) => {
       setLoading(true);
       const id = auth?.user;
       try {
-        const res = await axios.get(`/api/requestors/${id}/requests`);
+        const res = await axios.get(
+          `http://165.22.87.172:5000/api/requestors/${id}/requests`
+        );
         setDonations(res?.data);
         setLoading(false);
       } catch (error) {

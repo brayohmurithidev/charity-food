@@ -14,7 +14,7 @@ import { get_coordinates_by_city } from "../utils";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const REGISTERURL = "/api/register";
+const REGISTERURL = "http://165.22.87.172:5000/api/register";
 
 const Register = () => {
   const userRef = useRef();

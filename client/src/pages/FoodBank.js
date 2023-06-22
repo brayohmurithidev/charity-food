@@ -17,7 +17,7 @@ const FoodBank = () => {
   useEffect(() => {
     const get_profile = async () => {
       try {
-        const res = await axios.get("/api/profile", {
+        const res = await axios.get("http://165.22.87.172:5000/api/profile", {
           withCredentials: true,
         });
         setProfile(res.data);
@@ -33,28 +33,28 @@ const FoodBank = () => {
   useEffect(() => {
     const fetchData = async () => {
       const req1 = await axios.get(
-        `api/foodbanks/${profile?.id}/donations/filter`,
+        `http://165.22.87.172:5000/api/foodbanks/${profile?.id}/donations/filter`,
         {
           params: { status: "completed" },
           headers: { "Content-Type": "application/json" },
         }
       );
       const req2 = await axios.get(
-        `api/foodbanks/${profile?.id}/donations/filter`,
+        `http://165.22.87.172:5000/api/foodbanks/${profile?.id}/donations/filter`,
         {
           params: { status: "pending" },
           headers: { "Content-Type": "application/json" },
         }
       );
       const req3 = await axios.get(
-        `api/foodbanks/${profile?.id}/donations/filter`,
+        `http://165.22.87.172:5000/api/foodbanks/${profile?.id}/donations/filter`,
         {
           params: { isAvailable: true },
           headers: { "Content-Type": "application/json" },
         }
       );
       const req4 = await axios.get(
-        `api/foodbanks/${profile?.id}/donations/filter`,
+        `http://165.22.87.172:5000/api/foodbanks/${profile?.id}/donations/filter`,
         {
           params: { isDonated: true },
           headers: { "Content-Type": "application/json" },

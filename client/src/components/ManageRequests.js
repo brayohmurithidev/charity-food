@@ -29,7 +29,9 @@ const ManageRequests = ({ profile }) => {
 
   const fetchDonations = useCallback(async () => {
     try {
-      const res = await axios.get(`/api/foodbanks/${profile?.id}/requests`);
+      const res = await axios.get(
+        `http://165.22.87.172:5000/api/foodbanks/${profile?.id}/requests`
+      );
       const results = res?.data;
       setDonations(results);
     } catch (err) {
@@ -50,7 +52,7 @@ const ManageRequests = ({ profile }) => {
     // Code to update donation status
     try {
       const res = await axios.put(
-        `/api/requests/${selectedDonation.id}`,
+        `http://165.22.87.172:5000/api/requests/${selectedDonation.id}`,
         JSON.stringify({ status: selectedStatus }),
         {
           headers: { "Content-Type": "application/json" },

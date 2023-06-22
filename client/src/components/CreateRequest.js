@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 const initialData = {
@@ -31,9 +31,13 @@ const CreateRequest = ({ distances, profile }) => {
     } else {
       // MAKE A REQUEST
       try {
-        await axios.post("/api/requests", JSON.stringify({ ...data }), {
-          headers: { "Content-Type": "application/json" },
-        });
+        await axios.post(
+          "http://165.22.87.172:5000/api/requests",
+          JSON.stringify({ ...data }),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
         toast.success(
           "Your Request has been request and is under review! We will keep In touch!"
         );

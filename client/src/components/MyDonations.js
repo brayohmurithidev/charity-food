@@ -55,7 +55,7 @@ const MyDonations = () => {
         const id = updateData?.id;
         console.log(updateData);
         const res = await axios.put(
-          `/api/donations/${id}`,
+          `http://165.22.87.172:5000/api/donations/${id}`,
           JSON.stringify({
             status: updateData.status,
           }),
@@ -78,7 +78,9 @@ const MyDonations = () => {
       setLoading(true);
       const id = auth?.user;
       try {
-        const res = await axios.get(`/api/donors/${id}/donations`);
+        const res = await axios.get(
+          `http://165.22.87.172:5000/api/donors/${id}/donations`
+        );
         setDonations(res?.data);
         setLoading(false);
       } catch (error) {

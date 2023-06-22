@@ -7,7 +7,7 @@ import axios from "axios";
 
 import useAuth from "../hooks/useAuth";
 
-const LOGIN_URL = "/api/session";
+const LOGIN_URL = "http://165.22.87.172:5000/api/session";
 
 const Login = () => {
   const { setAuth } = useAuth();
@@ -38,8 +38,9 @@ const Login = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      const role = res?.data?.role;
-      const user = res?.data?.id;
+      const role = res.data.role || "";
+      const user = res.data.id || "";
+      console.log(`Role ${role} user: ${user}`);
       setAuth({ role, user });
       setEmail("");
       setPassword("");
@@ -51,7 +52,7 @@ const Login = () => {
       } else if (err.response?.status === 400) {
         toast.error("Missing email or password");
       } else if (err.response?.status === 401) {
-        toast.error("You are not Authorized");
+        toast.error("Invalid email or password");
       } else {
         toast.error("Login failed");
       }

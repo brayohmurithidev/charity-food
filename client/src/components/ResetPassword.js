@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const RESETURL = "/api/reset_password";
+const RESETURL = "http://165.22.87.172:5000/api/reset_password";
 
 const ResetPassword = () => {
   const navigation = useNavigate();
