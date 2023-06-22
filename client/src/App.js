@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import "./App.css";
@@ -14,16 +14,12 @@ import Register from "./components/Register";
 import ResetPassword from "./components/ResetPassword";
 import Donor from "./pages/Donor";
 import Recepient from "./pages/Recepient";
-import React, { useEffect } from "react";
+import React from "react";
 
 // Configure the toast notifications
 
 // MAIN ENTERY FILE
 function App() {
-  const location = useLocation();
-  useEffect(() => {
-    console.log(location);
-  }, [location]);
   return (
     <>
       <Routes>

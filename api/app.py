@@ -7,14 +7,26 @@ from controllers.donations import Donation_service as Donation, find_donations_b
 from sqlalchemy.orm.exc import NoResultFound
 from controllers.requests import Requests
 from flask_cors import CORS
-from utilities import send_email_method
+from utilities import send_email_method, decimal_default
 from sqlalchemy import or_
+from redis import Redis
 import os
+import json
+import logging
 
 
 app = Flask(__name__)
 DB = DB(app)
 CORS(app, supports_credentials=True)
+
+# BASIC LOGGER CONFIGURATION
+logging.basicConfig(filename='app.logs', filemode='w',
+                    format='%(name)s - %(levelname)s - %(message)s')
+
+# DECLARE REDIS
+redis_host = os.environ.get('REDIS_HOST')
+r_client = Redis(redis_host, socket_connect_timeout=1,
+                 decode_responses=True)
 
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
@@ -85,6 +97,9 @@ def create_user():
         return jsonify({"message": f'User {email} created successfully', "success": True}), 200
     except ValueError:
         return jsonify({"message": f'User {email} Already registerd', "success": False}), 400
+    except Exception as e:
+        logging.error(e)
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # LOGIN USER
 
@@ -124,6 +139,9 @@ def logout():
         return response,  200
     except NoResultFound:
         return jsonify({"success": False, "message": "Invalid Session Id or user does not exist"}), 403
+    except Exception as e:
+        logging.error(e)
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # GET USER DATA
 
@@ -134,11 +152,10 @@ def profile():
         # Retrieve the session ID from the cookie
         session_id = request.cookies.get("session_id")
         print(session_id)
-        if not session_id:
-            return "Cookie error"
         user = Auth.get_user_from_session_id(session_id)
         return user.to_dict()
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # RESET USER PASSWORD
@@ -153,6 +170,7 @@ def get_reset_password_token():
                           token, mail)
         return jsonify({"success": True, "message": f'A reset OTP has been sent to {email}'}), 200
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
     # except ValueError:
     #     return abort(403)
@@ -170,8 +188,9 @@ def update_password():
     try:
         Auth.update_password(reset_token, new_password)
         return jsonify({"email": email, "message": "Password updated", "success": True}), 200
-    except Exception:
-        return abort(403)
+    except Exception as e:
+        logging.error(e)
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
 # DONATION ROUTES
@@ -183,6 +202,7 @@ def create_donation():
         Donation.create_donation(data)
         return jsonify({"message": "Thank You for Your generous donation, a followup will be made", "success": True})
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # Get donation by id
@@ -195,6 +215,9 @@ def get_donation_by_id(id):
         return donation
     except NoResultFound:
         return jsonify({"message": "No donation found", "success": False}), 403
+    except Exception as e:
+        logging.error(e)
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
 # GET DONATIONS BY ANU ARGUMENTS
@@ -202,10 +225,22 @@ def get_donation_by_id(id):
 def get_donation_by_params():
     data = request.args
     try:
-        donations = find_donations_by(**data).all()
-        return [donation.to_dict() for donation in donations]
+        donations = r_client.get('donations')
+        if donations is None:
+            donations = find_donations_by(**data).all()
+            donations_dict = [donation.to_dict() for donation in donations]
+            donations_json = json.dumps(donations_dict)
+            r_client.set('donations', donations_json)
+        else:
+            # donations_dict = json.loads(donations)
+            donations = donations
+
+        return jsonify(donations_dict)
     except NoResultFound:
         return jsonify({"message": "No donation found", "success": False}), 403
+    except Exception as e:
+        logging.error(e)
+        return jsonify({"success": False, "message": "Error occurred", "error": str(e)})
 
 
 @app.route('/api/donations/<int:id>', methods=['PUT'])
@@ -232,9 +267,16 @@ def donate_food(id):
 @app.route('/api/foodbanks/<int:foodbank_id>/donations', methods=['GET'])
 def get_by_foodbank_id(foodbank_id):
     try:
-        donations = Donation.get_all_donations_by_foodbank(foodbank_id)
+        donations = r_client.get(f'foodbank_{foodbank_id}_donations')
+        if donations is None:
+            donations = Donation.get_all_donations_by_foodbank(foodbank_id)
+            r_client.set(
+                f'foodbank_{foodbank_id}_donations', json.dumps(donations, default=decimal_default))
+        else:
+            donations = json.loads(donations)
         return donations
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)})
 
 
@@ -243,10 +285,19 @@ def get_by_foodbank_id(foodbank_id):
 def get_donations_by_foodbank_where(foodbank_id):
     data = request.args
     try:
-        donations = Donation.get_all_donations_by_foodbank_where(
-            foodbank_id, **data)
+        donations = r_client.get(f'foodbanks_{foodbank_id}_filtered_donations')
+        if donations is None:
+
+            donations = Donation.get_all_donations_by_foodbank_where(
+                foodbank_id, **data)
+            r_client.set(
+                f'foodbanks_{foodbank_id}_filtered_donations', json.dumps(donations, default=decimal_default))
+        else:
+            donations = json.loads(donations)
+
         return donations
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)})
 
 
@@ -256,9 +307,18 @@ def get_donations_by_foodbank_where(foodbank_id):
 @app.route('/api/donors/<int:donor_id>/donations', methods=['GET'])
 def get_by_donor_id(donor_id):
     try:
-        donations = Donation.get_all_donations_by_donor(donor_id)
+        donations = r_client.get(f'donors_{donor_id}_donations')
+        if donations is None:
+
+            donations = Donation.get_all_donations_by_donor(donor_id)
+            r_client.set(f'donors_{donor_id}_donations', json.dumps(
+                donations, default=decimal_default))
+        else:
+
+            donations = json.loads(donations)
         return donations
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
@@ -275,6 +335,7 @@ def foodbanks_near_me():
         users = Auth.filter_food_banks(minLat, maxLat, minLon, maxLon)
         return users
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # JOINED BANK TO DONATIONS
@@ -294,6 +355,7 @@ def get_fdbnk_donations():
     except ValueError:
         return jsonify({"success": False, "message": "No foods around Your area"}), 404
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # ENDPOINTS TO REQUESTS
@@ -311,6 +373,7 @@ def create_request():
             "success": True
         })
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 # MAKE A REQUEST BY ID
@@ -322,6 +385,7 @@ def get_request_by_id(id):
         request = Requests.get_request_by_id(id)
         return request
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
@@ -333,6 +397,7 @@ def update_request_status(id):
         Requests.update_request(id, data)
         return jsonify({"message": "Data Updated successfully", "success": True})
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
@@ -343,6 +408,7 @@ def get_by_requestor_id(requestor_id):
         requests = Requests.get_all_requests_by_requestor(requestor_id)
         return requests
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
@@ -354,9 +420,10 @@ def get_by_foodbank(foodbank_id):
         requests = Requests.get_requests_made_to_a_foodbank(foodbank_id)
         return requests
     except Exception as e:
+        logging.error(e)
         return jsonify({"success": False, "message": "Error occurred", "error": str(e)}), 500
 
 
 if __name__ == '__main__':
     DB.create_all()
-    app.run(debug=True, port='5000')
+    app.run(port='5000')

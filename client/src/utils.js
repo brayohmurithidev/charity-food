@@ -1,8 +1,9 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const get_coordinates_by_city = async (city, country) => {
   if (city === "" || country === "") {
-    console.log("error");
+    toast.error("Please provide a city and country");
   }
   try {
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${city},+${country}&key=1efa19709b0c466bb6e64d0c5e6acb49&language=en&pretty=1`;
@@ -10,7 +11,7 @@ export const get_coordinates_by_city = async (city, country) => {
     const cords = res.data.results[0].geometry;
     return [cords.lat, cords.lng];
   } catch (error) {
-    console.log(error);
+    toast.error("City not found");
   }
 };
 

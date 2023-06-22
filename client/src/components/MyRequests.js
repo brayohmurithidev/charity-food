@@ -44,7 +44,6 @@ const MyRequests = ({ distances }) => {
     // Destructure the object and update the status
     const { status, ...updatedData } = item;
     updatedData.status = "canceled";
-    console.log(updatedData);
     setUpdateData({ id: updatedData.id, status: updatedData.status });
     setOpen(true);
   };
@@ -81,7 +80,7 @@ const MyRequests = ({ distances }) => {
         toast.success(res?.data?.message);
         setOpen(false);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   };
@@ -93,11 +92,10 @@ const MyRequests = ({ distances }) => {
       const id = auth?.user;
       try {
         const res = await axios.get(`/api/requestors/${id}/requests`);
-        console.log(res?.data);
         setDonations(res?.data);
         setLoading(false);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setLoading(false);
       }
     };
@@ -112,11 +110,6 @@ const MyRequests = ({ distances }) => {
     }));
   };
 
-  // useEffect(() => {
-  //   console.log("editRequest", editRequest);
-  //   console.log("distances", distances);
-  // }, [editRequest]);
-
   // CONST HANDLE UPDATE
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -124,7 +117,6 @@ const MyRequests = ({ distances }) => {
   };
 
   const handleEdit = (item) => {
-    console.log(item);
     setEditRequest(item);
     setEditModalOpen(true);
   };
@@ -153,33 +145,31 @@ const MyRequests = ({ distances }) => {
 
   return (
     <React.Fragment>
-      {loading ? (
-        "Loading"
-      ) : (
-        <TableContainer>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow sx={{ borderBottom: "" }}>
-                <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
-                  ID
-                </TableCell>
-                <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
-                  Food Item
-                </TableCell>
-                <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
-                  Quantity
-                </TableCell>
-                <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
-                  Food Bank
-                </TableCell>
-                <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
-                  Status
-                </TableCell>
-                <TableCell
-                  sx={{ fontSize: "20px", fontWeight: 900 }}
-                ></TableCell>
-              </TableRow>
-            </TableHead>
+      <TableContainer>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow sx={{ borderBottom: "" }}>
+              <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
+                ID
+              </TableCell>
+              <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
+                Food Item
+              </TableCell>
+              <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
+                Quantity
+              </TableCell>
+              <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
+                Food Bank
+              </TableCell>
+              <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}>
+                Status
+              </TableCell>
+              <TableCell sx={{ fontSize: "20px", fontWeight: 900 }}></TableCell>
+            </TableRow>
+          </TableHead>
+          {loading ? (
+            "Loading"
+          ) : (
             <TableBody>
               {requests?.map((item) => (
                 <TableRow key={item.id}>
@@ -231,9 +221,9 @@ const MyRequests = ({ distances }) => {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+          )}
+        </Table>
+      </TableContainer>
 
       <Modal open={editModalOpen} onClose={handleModalClose}>
         <Box

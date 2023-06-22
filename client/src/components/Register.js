@@ -44,14 +44,13 @@ const Register = () => {
     //check all data is passed:
     const isAllFieldsFilled = Object.values(userData).every((value) => value);
     if (!isAllFieldsFilled) {
-      console.log("not all are filled");
+      toast.error("All fields must be filled");
     } else {
       try {
         const cords = await get_coordinates_by_city(
           userData.city,
           userData.country
         );
-        console.log(cords);
         const res = await axios.post(
           REGISTERURL,
           JSON.stringify({

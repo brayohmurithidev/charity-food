@@ -6,7 +6,6 @@ const RequireAuth = ({ allowedRoles }) => {
   const roles = [auth?.role];
   const location = useLocation();
 
-  console.log(roles, allowedRoles);
 
   // CHECK IF USER IS OF THE AUTHORIZED ROLES
   if (roles?.find((role) => allowedRoles?.includes(role))) {

@@ -60,7 +60,6 @@ const CreateDonation = ({ profile, distances }) => {
         pickup_preference: pickupPreference,
         additional_information: additionalInfo,
       };
-      console.log(data);
 
       // SEND DATA TO AXIOS
       try {
@@ -77,15 +76,13 @@ const CreateDonation = ({ profile, distances }) => {
         setFoodbankNearMe("");
         setPickupPreference("");
         setAdditionalInfo("");
-        console.log(res?.data);
       } catch (err) {
         if (!err?.response) {
           toast.error("No Server Response !");
         } else if (err.response?.status === 400) {
           toast.error(err?.response?.data?.message);
         } else {
-          console.log(err?.response?.data?.message);
-          toast.error("Donation Error");
+          toast.error(err?.response?.data?.message);
         }
       }
     }

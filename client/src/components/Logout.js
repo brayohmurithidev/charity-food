@@ -21,7 +21,7 @@ const Logout = () => {
         console.error(error);
       }
     } else {
-      console.log("stay logged in");
+      return;
     }
   };
   return (
