@@ -19,6 +19,11 @@ app = Flask(__name__)
 DB = DB(app)
 CORS(app, supports_credentials=True)
 
+# DECLARE REDIS
+redis_host = os.environ.get('REDIS_HOST')
+r_client = Redis(redis_host, socket_connect_timeout=1,
+                 decode_responses=True)
+
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 app.config['MAIL_USE_TLS'] = True

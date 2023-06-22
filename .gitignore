@@ -1,5 +1,5 @@
 api/venv/
 api/.env
 api/**/__pycache__/
-**dump.rdb
-**app.logs
+api/dump.rdb
+api/app.logs
