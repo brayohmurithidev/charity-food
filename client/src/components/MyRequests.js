@@ -36,6 +36,7 @@ const MyRequests = ({ distances }) => {
   const [loading, setLoading] = useState(false);
   const [requests, setDonations] = useState(null);
   const [request, setRequest] = useState(null);
+  const [refetch, setRefetch] = useState(null);
   const [updateData, setUpdateData] = useState(null);
 
   const [open, setOpen] = React.useState(false);
@@ -77,6 +78,7 @@ const MyRequests = ({ distances }) => {
             headers: { "Content-Type": "application/json" },
           }
         );
+        setRefetch(true);
         toast.success(res?.data?.message);
         setOpen(false);
       } catch (error) {
@@ -100,7 +102,7 @@ const MyRequests = ({ distances }) => {
       }
     };
     fetch_donations();
-  }, [auth?.user]);
+  }, [auth?.user, refetch]);
 
   // HANDLE EDIT EDIT CHANGE
   const handleEditChange = (e) => {

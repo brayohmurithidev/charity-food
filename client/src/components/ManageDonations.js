@@ -247,6 +247,10 @@ const ManageDonations = ({ profile }) => {
                 <Typography variant="h6" component="h3">
                   This Donation was canceled by the donor
                 </Typography>
+              ) : selectedDonation.status === "completed" ? (
+                <Typography variant="h6" component="h3">
+                  This donation was successfully received
+                </Typography>
               ) : (
                 <Box mt={2}>
                   <Typography variant="h6" component="h3">

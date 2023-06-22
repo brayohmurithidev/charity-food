@@ -8,7 +8,6 @@ const FoodBankNearMe = ({ profile, foodbanks }) => {
       <Grid
         item
         xs={12}
-        mt={5}
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         {profile && (

@@ -29,6 +29,7 @@ const MyDonations = () => {
   const [editDonation, setEditDonation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [donations, setDonations] = useState(null);
+  const [refetch, setRefetch] = useState(null);
   const [updateData, setUpdateData] = useState(null);
 
   const [open, setOpen] = React.useState(false);
@@ -52,6 +53,7 @@ const MyDonations = () => {
     } else {
       try {
         const id = updateData?.id;
+        console.log(updateData);
         const res = await axios.put(
           `/api/donations/${id}`,
           JSON.stringify({
@@ -61,6 +63,7 @@ const MyDonations = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
+        setRefetch(true);
         toast.success(res?.data?.message);
         setOpen(false);
       } catch (error) {
@@ -83,7 +86,7 @@ const MyDonations = () => {
       }
     };
     fetch_donations();
-  }, [auth?.user]);
+  }, [auth?.user, refetch]);
 
   // HANDLE EDIT EDIT CHANGE
   const handleEditChange = (e) => {
